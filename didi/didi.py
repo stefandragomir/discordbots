@@ -21,7 +21,7 @@ class DD():
         self.guild     = None
         self.channel   = None
 
-    def connect(self):
+    async def connect(self):
 
         self.get_guild()
 
@@ -29,12 +29,12 @@ class DD():
 
         if self.guild != None and self.channel != None:
 
-            self.log.info("didi connected tto guild [%s] channel [%s]" % (self.guild.name,self.channel))
+            self.log.info("didi connected to guild [%s] channel [%s]" % (self.guild.name,self.channel))
 
         else:
             self.log.info("didi could not connect to guild [%s] channel [%s]" % (self.guild.name,self.channel))
 
-    def disconnect(self):
+    async def disconnect(self):
 
         self.log.info("didi disconnected from guild [%s] channel [%s]" % (self.guild.name,self.channel))
 
@@ -80,7 +80,7 @@ didi = DD()
 @didi.client.event
 async def on_ready():
 
-    didi.connect()
+    await didi.connect()
 
 '''********************************************************************************************************
 ***********************************************************************************************************
@@ -88,7 +88,7 @@ async def on_ready():
 @didi.client.event
 async def on_disconnect():
 
-    didi.disconnect()
+    await didi.disconnect()
 
 '''********************************************************************************************************
 ***********************************************************************************************************
