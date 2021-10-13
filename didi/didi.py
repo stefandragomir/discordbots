@@ -58,9 +58,15 @@ class DD():
 
                 self.channel = _channel
 
+    async def send_message(self,text):
+
+        await self.channel.send(text)
+
     async def on_message(self,message):
 
-        DD_Message(self,message).reply()
+        _msg = DD_Message(self,message)
+
+        await _msg.reply()
 
 '''********************************************************************************************************
 ***********************************************************************************************************
@@ -90,7 +96,7 @@ async def on_disconnect():
 @didi.client.event
 async def on_message(message):
 
-    didi.on_message(message)
+    await didi.on_message(message)
 
 '''********************************************************************************************************
 ***********************************************************************************************************
