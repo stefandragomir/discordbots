@@ -25,72 +25,36 @@ class DD_Message():
         _keyword.clbk        = self.__no_msg
         _keyword.description = None
         self.keywords.add(_keyword)
-
+        
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["baga una de suflet"]
+        _keyword.rules       = ["badwords"]
         _keyword.clbk        = self.__msg_1
-        _keyword.description = "baga una de suflet    - iti voi da o melodie de incalzit sufletul"
+        _keyword.description = None
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link spdp"]
+        _keyword.rules       = ["link"]
         _keyword.clbk        = self.__msg_2
-        _keyword.description = "link spdp    -  afisez linkul de la SPDP"
+        _keyword.description = "link -  afisez linkul pentru saracii din Yazaki"
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link ematrix"]
+        _keyword.rules       = ["sfat"]
         _keyword.clbk        = self.__msg_3
-        _keyword.description = "link ematrix    -  afisez linkul de la EMatrix"
+        _keyword.description = "sfat -  dau un sfat de viata"
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link mht"]
+        _keyword.rules       = ["hello"]
         _keyword.clbk        = self.__msg_4
-        _keyword.description = "link mht    -  afisez linkul de la Man Hour Tracking"
+        _keyword.description = None
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link odoo"]
+        _keyword.rules       = ["goodbye"]
         _keyword.clbk        = self.__msg_5
-        _keyword.description = "link odoo    -  afisez linkul de la Odoo"
+        _keyword.description = None
         self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link it"]
-        _keyword.clbk        = self.__msg_6
-        _keyword.description = "link it    -  afisez linkul de la Ticket IT"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link gitlab"]
-        _keyword.clbk        = self.__msg_7
-        _keyword.description = "link gitlab    -  afisez linkul de la Gitlab"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link review"]
-        _keyword.clbk        = self.__msg_8
-        _keyword.description = "link review    -  afisez linkul de la Review"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link tutoriale"]
-        _keyword.clbk        = self.__msg_9
-        _keyword.description = "link tutoriale    -  afisez linkul de la Software Tools Tutorials"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link asset"]
-        _keyword.clbk        = self.__msg_10
-        _keyword.description = "link asset    -  afisez linkul de la Asset Management"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link sharepoint"]
-        _keyword.clbk        = self.__msg_10
-        _keyword.description = "link sharepoint    -  afisez linkul de la Software Tools Sharepoint"
-        self.keywords.add(_keyword) 
 
     async def reply(self):
 
@@ -126,25 +90,32 @@ class DD_Message():
 
         if _match:
             _msg = _match.group(1).strip()
+        elif re.match("<@%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
+            _msg = ""
+        elif re.match("<@!%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
+            _msg = ""
+        elif self.__is_bad_word(self.message.content.strip()):
+            _msg = "badwords"
+        elif self.__is_hello(self.message.content.strip()):
+            _msg = "hello"
+        elif self.__is_goodbye(self.message.content.strip()):
+            _msg = "goodbye"
         else:
-            _match = re.match("<@%s>" % (self.parent.config.bot_id,),self.message.content.strip())
-            if _match:
-                _msg = ""
-            else:
-                _match = re.match("<@!%s>" % (self.parent.config.bot_id,),self.message.content.strip())
-                if _match:
-                    _msg = ""
-                else:
-                    if self.__is_bad_word(self.message.content.strip()):
-                        _msg = "badwords"
-                    else:
-                        _msg = None
+            _msg = None
 
         return _msg
 
     def __is_bad_word(self,text):
 
-        return any([_word in self.parent.config.bad_words for _word in text.split(" ")])
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_bad_words])
+
+    def __is_hello(self,text):
+
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_hello])
+
+    def __is_goodbye(self,text):
+
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_goodbye])
 
     async def __no_msg(self,match):
 
@@ -171,58 +142,46 @@ class DD_Message():
 
     async def __msg_1(self,match):
 
-        _selections = [
-                        "https://www.youtube.com/watch?v=Kg8QrGZKuuE&ab_channel=AmmaMusic%26Sound",
-                        "https://www.youtube.com/watch?v=NQ4tCQcCFJY&ab_channel=NekMusicTv",
-                        "https://www.youtube.com/watch?v=DEja1ZLWCMM&ab_channel=DaniMocanu%C2%A9Oficial",
-                        "https://www.youtube.com/watch?v=U9gGbDEDrv0&ab_channel=FortzaManele",
-                        "https://www.youtube.com/watch?v=TsUxWZeFCw8&ab_channel=DaniMocanu%C2%A9Oficial",
-                        "https://www.youtube.com/watch?v=XTKKj0CX3yQ&ab_channel=AmmAMusic%26Sound",
-                        "https://www.youtube.com/watch?v=ynT2aiOhjt4&t=1s&ab_channel=JeandelaCraiova",
-
-                      ]
-
-        _selection = randrange(0,len(_selections))
-
-        await self.parent.send_message(_selections[_selection])
+        await self.parent.send_message("<@%s> ba nu mai vorbi urat" % (self.message.author.id,))
 
     async def __msg_2(self,match):
 
-        await self.parent.send_message("http://intranet-eibu.yazaki-europe.com/spdp/")
+        _links = """
+        SPDP - http://intranet-eibu.yazaki-europe.com/spdp/
+        EMATRIX - https://matrix.yazaki-europe.com/ematrix
+        MHT - https://mht.yazaki-europe.com/mht/Account/LogOn#/persons/view
+        ODOO - http://10.50.4.223:8069/
+        IT TICKET - https://yelprod.service-now.com/sp?id=ticket&is_new_order=true&table=incident&sys_id=528a5a681b950c10698ec8017e4bcbd7
+        GITLAB - http://10.50.4.223:11011/
+        REVIEW TOOL - http://10.50.4.223:22022/
+        VIDEO TUTORIALS - https://web.microsoftstream.com/group/1adfb544-9161-4b83-b224-9c27606ce7bd
+        ASSET MANAGEMENT - http://yctt-f01.yel.yazaki.local/trac/yct-t-assets
+        SW TOOLS SHARE POINT - https://yazaki.sharepoint.com/sites/SoftwareTools
+        """
+
+        await self.parent.send_message(_links)
 
     async def __msg_3(self,match):
 
-        await self.parent.send_message("https://matrix.yazaki-europe.com/ematrix")
+        _selections = [
+                        "nu da cu piatra in geam ca nu e bicicleta ta",
+                        "daca nu faci nimic, nu strici nimic",
+                        "daca ceva merge, nu il repara",
+                        "cine sapara groapa altuia, departe ajunge",
+                        "daca nu ai enervat pe nimeni, inseamna ca nu ai facut nimic",
+                        "orice cacat faci, sa il ambalezi frumos",
+                        "nu te certa cu prostii, ca au mai multa experienta",
+                        "nu uita ca e ilegal sa omori alti oameni",
+                      ]
+
+        _selection = randrange(0,len(_selections))
+    
+        await self.parent.send_message(_selections[_selection])
 
     async def __msg_4(self,match):
 
-        await self.parent.send_message("https://mht.yazaki-europe.com/mht/Account/LogOn#/persons/view")
+        await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
 
     async def __msg_5(self,match):
 
-        await self.parent.send_message("http://10.50.4.223:8069/")
-
-    async def __msg_6(self,match):
-
-        await self.parent.send_message("https://yelprod.service-now.com/sp?id=ticket&is_new_order=true&table=incident&sys_id=528a5a681b950c10698ec8017e4bcbd7")
-
-    async def __msg_7(self,match):
-
-        await self.parent.send_message("http://10.50.4.223:11011/")
-
-    async def __msg_8(self,match):
-
-        await self.parent.send_message("http://10.50.4.223:22022/")
-
-    async def __msg_9(self,match):
-
-        await self.parent.send_message("https://web.microsoftstream.com/group/1adfb544-9161-4b83-b224-9c27606ce7bd")
-
-    async def __msg_10(self,match):
-
-        await self.parent.send_message("http://yctt-f01.yel.yazaki.local/trac/yct-t-assets")
-
-    async def __msg_11(self,match):
-
-        await self.parent.send_message("https://yazaki.sharepoint.com/sites/SoftwareTools")
-
+        await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
