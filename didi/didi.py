@@ -2,11 +2,36 @@
 import sys
 import os
 import discord
-
+from argparse      import ArgumentParser
 from didi_msg      import DD_Message
 from didi_logger   import DD_Logger
-from didi_config   import DD_Config
+from didi_db       import DD_DB
 
+
+"""*************************************************************************************************
+****************************************************************************************************
+*************************************************************************************************"""
+class DD_Arguments(object):
+
+    arguments = None
+
+    def __init__(self):
+
+        self.arg = ArgumentParser()
+
+        self._add_arguments()
+
+        self.arguments = self._parse_arguments()
+
+    def _add_arguments(self):
+
+        self.arg.add_argument('--run',          action='store_true',  help='run didi on default configuration')
+        self.arg.add_argument('--debug',        action='store_true',  help='option to run on debug guild')
+        self.arg.add_argument('--log',          action='store_true',  help='option to log everything that happens')
+
+    def _parse_arguments(self):
+
+        return self.arg.parse_args()
 
 '''********************************************************************************************************
 ***********************************************************************************************************
@@ -15,11 +40,12 @@ class DD():
 
     def __init__(self):
 
-        self.config    = DD_Config()
+        self.db        = DD_DB(r"c:\temp\didi.db")
         self.client    = discord.Client()
         self.log       = DD_Logger()
         self.guild     = None
         self.channel   = None
+        self.arg       = DD_Arguments()
 
     async def connect(self):
 
@@ -38,9 +64,17 @@ class DD():
 
         self.log.info("didi disconnected from guild [%s] channel [%s]" % (self.guild.name,self.channel))
 
-    def run(self):
+    def execute(self):
 
-        self.client.run(self.config.bot_token)
+        if self.arg.arguments.run:
+
+            self.run(self.arg.arguments.debug,self.arg.arguments.log)
+
+    def run(self,debug,log):
+
+        self.db.connect()
+
+        # self.client.run(self.config.bot_token)
 
     def get_guild(self):
 
@@ -101,4 +135,4 @@ async def on_message(message):
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-didi.run()
+didi.execute()

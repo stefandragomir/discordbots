@@ -1,30 +1,39 @@
 
 import re
+import enum
+from sqlalchemy.orm import declarative_base
+from sqlalchemy     import Column
+from sqlalchemy     import Integer
+from sqlalchemy     import String
+from sqlalchemy     import Boolean
+from sqlalchemy     import Enum
+from sqlalchemy     import ForeignKey
+from sqlalchemy.orm import relationship
+
+DD_DB_Base    = declarative_base()
 
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_Model_Base_List():
+class DD_DB_Rule_Types(enum.Enum):
 
-    def __init__(self):
+    RULE_BAD_WORD = 1
+    RULE_HELLO    = 2
+    RULE_GOODBY   = 3
 
-        self.objects = []
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_DB_Config(DD_DB_Base):
 
-    def add(self,obj):
+    __tablename__ = 'configs'
 
-        self.objects.append(obj)  
+    id        = Column(Integer, primary_key=True)
+    token     = Column(String)
+    guild     = Column(String)
+    channel   = Column(String)
+    botid     = Column(String)
 
-    def remove(self,obj):
-
-        self.objects.remove(obj)  
-
-    def remove_by_attribute(self,attribute,value):
-
-        _item = self.find_by_attribute(attribute,value)
-
-        if _item != None:
-
-            self.remove(_item)
 
     def __repr__(self):
 
@@ -36,81 +45,113 @@ class DD_Model_Base_List():
 
     def __print(self):
 
-        _txt = ""
-        
-        for obj in self.objects:
-
-            _txt += str(obj)
+        _txt =  "user: id[%s] token[%s] guild[%s] channel[%s] botid[%s]" % (self.id,self.token,self.guild,self.channel,self.botid)
 
         return _txt
 
-    def __iter__(self):
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_DB_User(DD_DB_Base):
 
-        for obj in self.objects:
+    __tablename__ = 'users'
 
-            yield obj
+    id       = Column(Integer, primary_key=True)
+    name     = Column(String)
+    uid      = Column(Integer)
+    profile  = relationship("DD_DB_Profile")
 
-    def __getitem__(self,index):
 
-        return self.objects[index]
+    def __repr__(self):
 
-    def __len__(self):
+        return self.__print()
 
-        return len(self.objects)
+    def __str__(self):
 
-    def find_by_attribute(self,attribute,value):
+        return self.__print()
 
-        _object = None
+    def __print(self):
 
-        for _obj in self.objects:
+        _txt =  "user: id[%s] name[%s] admin[%s] uid[%s]" % (self.id,self.name,self.admin,self.uid)
 
-            if getattr(_obj,attribute) == value:
-
-                _object = _obj
-
-        return _object
-
-    def __add__(self,other):
-
-        self.objects += other.objects
-
-        return self
-
-    def reverse(self):
-
-        self.objects.reverse()
+        return _txt
 
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_Message_Keyword():
+class DD_DB_Advice(DD_DB_Base):
 
-    def __init__(self):
+    __tablename__ = 'advice'
 
-        self.rules       = []
-        self.clbk        = None
-        self.description = None
+    id       = Column(Integer, primary_key=True)
+    text     = Column(String)
+    user_id  = Column(Integer, ForeignKey('users.id'))
+    user     = relationship("DD_DB_User")
 
-    def is_match(self,text):
+    def __repr__(self):
 
-        _rule_match = None
+        return self.__print()
 
-        for _rule in self.rules:
+    def __str__(self):
 
-            _match = re.match(_rule,text)
+        return self.__print()
 
-            if _match != None:
+    def __print(self):
 
-                _rule_match = _match
+        _txt =  "advice: id[%s] text[%s] user[%s]" % (self.id,self.text,self.user.name)
 
-        return _rule_match
+        return _txt
 
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_Message_Keywords(DD_Model_Base_List):
+class DD_DB_Profile(DD_DB_Base):
 
-    def __init__(self):
+    __tablename__ = 'profiles'
 
-        DD_Model_Base_List.__init__(self)
+    id       = Column(Integer, primary_key=True)
+    badwords = Column(Integer)
+    admin    = Column(Boolean)
+    user_id  = Column(Integer, ForeignKey('users.id'))
+    user     = relationship("DD_DB_User",back_populates="profile")
 
+
+    def __repr__(self):
+
+        return self.__print()
+
+    def __str__(self):
+
+        return self.__print()
+
+    def __print(self):
+
+        _txt =  "user: id[%s] badwords[%s] admin[%s] user[%s]" % (self.id,self.badwords,self.admin,self.user.name)
+
+        return _txt
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_DB_Rule(DD_DB_Base):
+
+    __tablename__ = 'rules'
+
+    id       = Column(Integer, primary_key=True)
+    text     = Column(Integer)
+    context  = Column(Enum(DD_DB_Rule_Types))
+
+
+    def __repr__(self):
+
+        return self.__print()
+
+    def __str__(self):
+
+        return self.__print()
+
+    def __print(self):
+
+        _txt =  "user: id[%s] text[%s] context[%s] " % (self.id,self.text,self.context)
+
+        return _txt

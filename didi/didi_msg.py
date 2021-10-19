@@ -88,14 +88,14 @@ class DD_Message():
 
         _match = re.match("<@%s> (.+)" % (self.parent.config.bot_id,),self.message.content.strip())
 
-        if _match:
+        if self.__is_bad_word(self.message.content.strip()):
+            _msg = "badwords"
+        elif _match:
             _msg = _match.group(1).strip()
         elif re.match("<@%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
             _msg = ""
         elif re.match("<@!%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
             _msg = ""
-        elif self.__is_bad_word(self.message.content.strip()):
-            _msg = "badwords"
         elif self.__is_hello(self.message.content.strip()):
             _msg = "hello"
         elif self.__is_goodbye(self.message.content.strip()):
