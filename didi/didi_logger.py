@@ -10,12 +10,6 @@ from time                   import strftime
 ****************************************************************************"""
 class DD_Logger(object):
 
-    LOG_LEVEL_INFO    = "INFO"
-    LOG_LEVEL_WARNING = "WARNING" 
-    LOG_LEVEL_ERROR   = "ERROR"
-    LOG_LEVEL_DEBUG   = "DEBUG"
-    LOG_LEVEL_VIEW    = "VIEW"
-
     def __init__(self,path=None):
 
         self.path        = path
@@ -64,13 +58,13 @@ class DD_Logger(object):
 
     def archive_log(self):
 
-        _archive_path = os.path.join(os.path.split(self.path)[0],"dd_log_archive")
+        _archive_path = os.path.join(os.path.split(self.path)[0],"didi_log_archive")
         
         if not os.path.exists(_archive_path):
 
             os.makedirs(_archive_path)
 
-        _archive_path = os.path.join(_archive_path,strftime("dd_log_%d_%m_%Y_%H_%M_%S.zip", gmtime()))
+        _archive_path = os.path.join(_archive_path,strftime("didi_log_%d_%m_%Y_%H_%M_%S.zip", gmtime()))
 
         _arch = zipfile.ZipFile(_archive_path, mode='w')
 
@@ -85,17 +79,17 @@ class DD_Logger(object):
 
     def info(self,txt):
 
-        self.__log(txt,self.LOG_LEVEL_INFO)
+        self.__log(txt,"INFO")
 
     def warning(self,txt):
 
-        self.__log(txt,self.LOG_LEVEL_WARNING)
+        self.__log(txt,"WARNING")
 
     def error(self,txt):
 
-        self.__log(txt,self.LOG_LEVEL_ERROR)
+        self.__log(txt,"ERROR")
 
     def debug(self,txt):
 
-        self.__log(txt,self.LOG_LEVEL_DEBUG)
+        self.__log(txt,"DEBUG")
 

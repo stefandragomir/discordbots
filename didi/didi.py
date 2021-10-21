@@ -25,9 +25,8 @@ class DD_Arguments(object):
 
     def _add_arguments(self):
 
-        self.arg.add_argument('--run',          action='store_true',  help='run didi on default configuration')
-        self.arg.add_argument('--debug',        action='store_true',  help='option to run on debug guild')
-        self.arg.add_argument('--log',          action='store_true',  help='option to log everything that happens')
+        self.arg.add_argument('--run',    type=str,            help='run didi on specified configuration')
+        self.arg.add_argument('--init',   action='store_true', help='create empty didi db')
 
     def _parse_arguments(self):
 
@@ -40,9 +39,10 @@ class DD():
 
     def __init__(self):
 
-        self.db        = DD_DB(r"c:\temp\didi.db")
+        self.db        = DD_DB(self.get_db_path())
         self.client    = discord.Client()
-        self.log       = DD_Logger()
+        self.log       = DD_Logger(self.get_log_path())
+        self.config    = None
         self.guild     = None
         self.channel   = None
         self.arg       = DD_Arguments()
@@ -66,31 +66,63 @@ class DD():
 
     def execute(self):
 
-        if self.arg.arguments.run:
+        if self.arg.arguments.run != None:
 
-            self.run(self.arg.arguments.debug,self.arg.arguments.log)
+            self.run(self.arg.arguments.run)
 
-    def run(self,debug,log):
+        elif self.arg.arguments.init:
+
+            self.init()
+
+    def run(self,index):
+
+        index = int(index)
 
         self.db.connect()
 
-        # self.client.run(self.config.bot_token)
+        _configurations = self.db.get_all_config()
 
+        if index <= len(_configurations) - 1:
+            self.config = _configurations[index]
+        else:
+            self.config = None
+            self.log.error("configuration [%s] does not exist in db" % (index,))
+
+        if self.config != None:
+
+            self.log.debug("running didi with configuration [%s]" % (index,))
+
+            self.client.run(self.config.token)
+
+    def init(self):
+
+        self.db.connect()
+
+        self.db.create_empty()
+        
     def get_guild(self):
+
+        self.log.debug("searching for guild [%s]" % (self.config.guild,))
 
         for _guild in self.client.guilds:
 
-            if _guild.name == self.config.guild_name:
+            if _guild.name == self.config.guild:
 
                 self.guild = _guild
 
+                self.log.debug("found for guild [%s]" % (self.config.guild,))
+
     def get_channel(self):
+
+        self.log.debug("searching for channel [%s]" % (self.config.channel,))
 
         for _channel in self.guild.text_channels:
 
-            if _channel.name == self.config.channel_name:
+            if _channel.name == self.config.channel:
 
                 self.channel = _channel
+
+                self.log.debug("found channel [%s]" % (self.config.channel,))
 
     async def send_message(self,text):
 
@@ -101,6 +133,28 @@ class DD():
         _msg = DD_Message(self,message)
 
         await _msg.reply()
+
+    def get_settings_dir(self):
+
+        _path = os.path.join(os.path.expanduser("~"),".didi")
+
+        if not os.path.exists(_path):
+            
+            os.mkdir(_path)  
+            os.mkdir(os.path.join(_path,"db"))
+            os.mkdir(os.path.join(_path,"log"))
+
+        return _path
+
+    def get_db_path(self):
+
+        return os.path.join(self.get_settings_dir(),"db","didi.db")
+
+    def get_log_path(self):
+
+        return os.path.join(self.get_settings_dir(),"log","didi.log")
+
+
 
 '''********************************************************************************************************
 ***********************************************************************************************************

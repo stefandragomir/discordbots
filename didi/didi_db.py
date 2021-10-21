@@ -24,6 +24,22 @@ class DD_DB():
 
         return self.session.query(DD_DB_User).all()
 
+    def get_all_config(self):
+
+        return self.session.query(DD_DB_Config).all()
+
+    def get_all_advice(self):
+
+        return self.session.query(DD_DB_Advice).all()
+
+    def get_all_rules(self):
+
+        return self.session.query(DD_DB_Rule).all()
+
+    def get_all_profiles(self):
+
+        return self.session.query(DD_DB_Profile).all()
+
     def get_user_by_uid(self,uid):
 
         return self.session.query(DD_DB_User).filter_by(uid=uid).all()
@@ -32,17 +48,10 @@ class DD_DB():
 
         return self.session.query(DD_DB_User).filter_by(name=name).all()
 
-    def get_all_config(self):
+    def get_rules_badwords(self):
 
-        return self.session.query(DD_DB_Config).all()
+        return self.session.query(DD_DB_Rule).filter_by(context=RULE_BAD_WORD).all()
 
-    def get_config_by_guild(self,guild):
-
-        return self.session.query(DD_DB_Config).filter_by(guild=guild).all()
-
-    def get_all_advice(self):
-
-        return self.session.query(DD_DB_Advice).all()
 
     def add_advice(self,text,user_uid):
 
@@ -55,3 +64,37 @@ class DD_DB():
         self.session.add(_advice)
 
         self.session.commit()
+
+    def create_empty(self):
+
+        _config           = DD_DB_Config()
+        _config.token     = "thetoken"
+        _config.guild     = "theguild"
+        _config.channel   = "thechannel"
+        _config.botid     = "thebotid"
+
+        _user             = DD_DB_User()
+        _user.name        = "theuser"
+        _user.uid         = "theuid"
+
+        _profile          = DD_DB_Profile()
+        _profile.badwords = 0
+        _profile.admin    = False
+        _profile.user     = _user 
+
+        _advice           = DD_DB_Advice()
+        _advice.text      = "theadvice"
+        _advice.user      = _user
+
+        _rule             = DD_DB_Rule()
+        _rule.text        = "thetext"
+        _rule.context     = DD_DB_Rule_Types.RULE_BAD_WORD
+
+        self.session.add(_config)
+        self.session.add(_user)
+        self.session.add(_profile)
+        self.session.add(_advice)
+        self.session.add(_rule)
+
+        self.session.commit()
+

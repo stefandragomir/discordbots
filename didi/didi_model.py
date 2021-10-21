@@ -59,7 +59,6 @@ class DD_DB_User(DD_DB_Base):
     id       = Column(Integer, primary_key=True)
     name     = Column(String)
     uid      = Column(Integer)
-    profile  = relationship("DD_DB_Profile")
 
 
     def __repr__(self):
@@ -113,7 +112,7 @@ class DD_DB_Profile(DD_DB_Base):
     badwords = Column(Integer)
     admin    = Column(Boolean)
     user_id  = Column(Integer, ForeignKey('users.id'))
-    user     = relationship("DD_DB_User",back_populates="profile")
+    user     = relationship("DD_DB_User")
 
 
     def __repr__(self):
@@ -155,3 +154,82 @@ class DD_DB_Rule(DD_DB_Base):
         _txt =  "user: id[%s] text[%s] context[%s] " % (self.id,self.text,self.context)
 
         return _txt
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_Model_Base_List():
+
+    def __init__(self):
+
+        self.objects = []
+
+    def add(self,obj):
+
+        self.objects.append(obj)  
+
+    def remove(self,obj):
+
+        self.objects.remove(obj)  
+
+    def remove_by_attribute(self,attribute,value):
+
+        _item = self.find_by_attribute(attribute,value)
+
+        if _item != None:
+
+            self.remove(_item)
+
+    def __repr__(self):
+
+        return self.__print()
+
+    def __str__(self):
+
+        return self.__print()
+
+    def __print(self):
+
+        _txt = ""
+        
+        for obj in self.objects:
+
+            _txt += str(obj)
+
+        return _txt
+
+    def __iter__(self):
+
+        for obj in self.objects:
+
+            yield obj
+
+    def __getitem__(self,index):
+
+        return self.objects[index]
+
+    def __len__(self):
+
+        return len(self.objects)
+
+    def find_by_attribute(self,attribute,value):
+
+        _object = None
+
+        for _obj in self.objects:
+
+            if getattr(_obj,attribute) == value:
+
+                _object = _obj
+
+        return _object
+
+    def __add__(self,other):
+
+        self.objects += other.objects
+
+        return self
+
+    def reverse(self):
+
+        self.objects.reverse()
