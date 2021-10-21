@@ -32,6 +32,10 @@ class DD_DB():
 
         return self.session.query(DD_DB_Rule).all()
 
+    def get_all_profiles(self):
+
+        return self.session.query(DD_DB_Profile).all()
+
     def get_user_by_uid(self,uid):
 
         return self.session.query(DD_DB_User).filter_by(uid=uid).all()
@@ -64,13 +68,23 @@ class DD_DB():
         
     def add_advice(self,text,user_uid):
 
-        _users = self.session.query(DD_DB_User).filter_by(uid=user_uid).all()
+        _users = sef.get_user_by_uid(user_uid)
 
         _advice      = DD_DB_Advice()
         _advice.text = text
         _advice.user = _users[0]
 
         self.session.add(_advice)
+
+        self.session.commit()
+
+    def increment_badword(self,user_uid):
+
+        _profile = self.get_user_profile_by_uid(user_uid)
+
+        if _profile != None:
+
+            _profile.badwords += 1
 
         self.session.commit()
 

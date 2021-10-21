@@ -96,6 +96,13 @@ class DD_Message():
         _keyword.description = None
         self.keywords.add(_keyword)
 
+        self.keywords.add(_keyword)
+        _keyword             = DD_Message_Keyword()
+        _keyword.rules       = ["scor"]
+        _keyword.clbk        = self.__msg_7
+        _keyword.description = "scor -  cat de des s-a injurat"
+        self.keywords.add(_keyword)
+
     async def reply(self):
 
         _msg = self.__get_msg(self.message.content)
@@ -163,6 +170,8 @@ class DD_Message():
 
     async def __msg_1(self,msg):
 
+        self.parent.db.increment_badword(self.message.author.id)
+
         await self.parent.send_message("<@%s> ba nu mai vorbi urat" % (self.message.author.id,))
 
     async def __msg_2(self,msg):
@@ -221,5 +230,34 @@ class DD_Message():
                 _reply = "nu iau sfaturi de la tine <@%s>" % (self.message.author.id,)
         else:
             _reply = "sa tin minte ce? ca nu mi-ai spus nimic <@%s>" % (self.message.author.id,)
+
+        await self.parent.send_message(_reply)
+
+    async def __msg_7(self,msg):
+
+        _reply = ""
+
+        _profiles = self.parent.db.get_all_profiles()
+
+        _profiles.sort(reverse=False,key=lambda profile: profile.badwords)
+
+        _count = 1
+
+        for _profile in _profiles:
+
+            if _count == 1:
+                _emoji = ":first_place:"
+            elif _count == 2:
+                _emoji = ":second_place:"
+            elif _count == 3:
+                _emoji = ":third_place:"
+            elif _count == len(_profiles):
+                _emoji = ":angry:"
+            else:
+                _emoji = ":confused:"
+
+            _reply += "%s %s - %s injuraturi\n\n" % (_emoji, _profile.user.name, _profile.badwords)
+
+            _count += 1
 
         await self.parent.send_message(_reply)
