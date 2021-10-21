@@ -25,8 +25,9 @@ class DD_Arguments(object):
 
     def _add_arguments(self):
 
-        self.arg.add_argument('--run',    type=str,            help='run didi on specified configuration')
-        self.arg.add_argument('--init',   action='store_true', help='create empty didi db')
+        self.arg.add_argument('--run',        type=str,            help='run didi on specified configuration')
+        self.arg.add_argument('--init',       action='store_true', help='create empty didi db')
+        self.arg.add_argument('--keywords',   action='store_true', help='show all didi defined keywords')
 
     def _parse_arguments(self):
 
@@ -74,6 +75,10 @@ class DD():
 
             self.init()
 
+        elif self.arg.arguments.keywords:
+
+            self.keywords()
+
     def run(self,index):
 
         index = int(index)
@@ -99,7 +104,17 @@ class DD():
         self.db.connect()
 
         self.db.create_empty()
+
+    def keywords(self):
+
+        _keywords = [_keyword for _keyword in DD_Message(self,None).keywords]
         
+        print("KEYWORDS:")
+
+        for _keyword in _keywords:
+
+            print("   ",_keyword.rules)       
+
     def get_guild(self):
 
         self.log.debug("searching for guild [%s]" % (self.config.guild,))
@@ -153,8 +168,6 @@ class DD():
     def get_log_path(self):
 
         return os.path.join(self.get_settings_dir(),"log","didi.log")
-
-
 
 '''********************************************************************************************************
 ***********************************************************************************************************

@@ -20,10 +20,6 @@ class DD_DB():
 
         self.session = sessionmaker(bind=self.engine)()
 
-    def get_all_users(self):
-
-        return self.session.query(DD_DB_User).all()
-
     def get_all_config(self):
 
         return self.session.query(DD_DB_Config).all()
@@ -36,23 +32,36 @@ class DD_DB():
 
         return self.session.query(DD_DB_Rule).all()
 
-    def get_all_profiles(self):
-
-        return self.session.query(DD_DB_Profile).all()
-
     def get_user_by_uid(self,uid):
 
         return self.session.query(DD_DB_User).filter_by(uid=uid).all()
 
-    def get_user_by_name(self,name):
+    def get_user_profile_by_uid(self,uid):
 
-        return self.session.query(DD_DB_User).filter_by(name=name).all()
+        _the_profile = None
+
+        _profiles = self.session.query(DD_DB_Profile).all()
+
+        for _profile in _profiles:
+
+            if _profile.user.uid == uid:
+
+                _the_profile = _profile
+
+        return _the_profile
 
     def get_rules_badwords(self):
 
-        return self.session.query(DD_DB_Rule).filter_by(context=RULE_BAD_WORD).all()
+        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_BAD_WORD).all()
 
+    def get_rules_hello(self):
 
+        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_HELLO).all()
+
+    def get_rules_goodbye(self):
+
+        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_GOODBY).all()
+        
     def add_advice(self,text,user_uid):
 
         _users = self.session.query(DD_DB_User).filter_by(uid=user_uid).all()

@@ -71,7 +71,7 @@ class DD_DB_User(DD_DB_Base):
 
     def __print(self):
 
-        _txt =  "user: id[%s] name[%s] admin[%s] uid[%s]" % (self.id,self.name,self.admin,self.uid)
+        _txt =  "user: id[%s] name[%s] uid[%s]" % (self.id,self.name,self.uid)
 
         return _txt
 

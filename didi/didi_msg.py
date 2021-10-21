@@ -17,7 +17,7 @@ class DD_Message_Keyword():
 
     def is_match(self,text):
 
-        _rule_match = None
+        _status = False
 
         for _rule in self.rules:
 
@@ -25,9 +25,9 @@ class DD_Message_Keyword():
 
             if _match != None:
 
-                _rule_match = _match
+                _status = True
 
-        return _rule_match
+        return _status
 
 '''********************************************************************************************************
 ***********************************************************************************************************
@@ -37,7 +37,7 @@ class DD_Message_Keywords(DD_Model_Base_List):
     def __init__(self):
 
         DD_Model_Base_List.__init__(self)
-        
+
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
@@ -53,12 +53,6 @@ class DD_Message():
     def __create_keywords(self):
 
         self.keywords = DD_Message_Keywords()
-
-        _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ""
-        _keyword.clbk        = self.__no_msg
-        _keyword.description = None
-        self.keywords.add(_keyword)
         
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["badwords"]
@@ -90,9 +84,19 @@ class DD_Message():
         _keyword.description = None
         self.keywords.add(_keyword)
 
-    async def reply(self):
+        _keyword             = DD_Message_Keyword()
+        _keyword.rules       = ["help"]
+        _keyword.clbk        = self.__help
+        _keyword.description = None
 
-        _found = False
+        self.keywords.add(_keyword)
+        _keyword             = DD_Message_Keyword()
+        _keyword.rules       = ["tine minte"]
+        _keyword.clbk        = self.__msg_6
+        _keyword.description = None
+        self.keywords.add(_keyword)
+
+    async def reply(self):
 
         _msg = self.__get_msg(self.message.content)
 
@@ -100,35 +104,23 @@ class DD_Message():
 
             for _keyword in self.keywords:
 
-                _match = _keyword.is_match(_msg)
+                if _keyword.is_match(_msg):
 
-                if _match != None:
-
-                    _found = True
-
-                    await _keyword.clbk(_match)
-
-            if not _found:
-
-                _found = True
-
-                await self.__no_msg(None)
-
-        return _found
+                    await _keyword.clbk(_msg)
 
     def __get_msg(self,txt):
 
         _msg = None
 
-        _match = re.match("<@%s> (.+)" % (self.parent.config.bot_id,),self.message.content.strip())
+        _match = re.match("<@%s> (.+)" % (self.parent.config.botid,),self.message.content.strip())
 
         if self.__is_bad_word(self.message.content.strip()):
             _msg = "badwords"
         elif _match:
             _msg = _match.group(1).strip()
-        elif re.match("<@%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
+        elif re.match("<@%s>" % (self.parent.config.botid,),self.message.content.strip()):
             _msg = ""
-        elif re.match("<@!%s>" % (self.parent.config.bot_id,),self.message.content.strip()):
+        elif re.match("<@!%s>" % (self.parent.config.botid,),self.message.content.strip()):
             _msg = ""
         elif self.__is_hello(self.message.content.strip()):
             _msg = "hello"
@@ -141,28 +133,23 @@ class DD_Message():
 
     def __is_bad_word(self,text):
 
-        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_bad_words])
+        _rules = [_rule.text for _rule in self.parent.db.get_rules_badwords()]        
+
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
 
     def __is_hello(self,text):
 
-        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_hello])
+        _rules = [_rule.text for _rule in self.parent.db.get_rules_hello()]
+
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
 
     def __is_goodbye(self,text):
 
-        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in self.parent.config.rule_goodbye])
+        _rules = [_rule.text for _rule in self.parent.db.get_rules_goodbye()]
 
-    async def __no_msg(self,match):
+        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
 
-        _selections = [
-                        "ba nu ma stresa!",
-                        "nu stiu ce vrei de la mine!",
-                        "boss nu te inteleg!",
-                        "ba tu nu ai ceva mai bun de facut?",
-                        "socares mo?",
-                        "ja poteca",
-                      ]
-
-        _selection = randrange(0,len(_selections))
+    async def __help(self,msg):
 
         _commands = ""
 
@@ -172,13 +159,13 @@ class DD_Message():
 
                 _commands += "    %s\n" % (_keyword.description, )
 
-        await self.parent.send_message("%s \neu nu raspund decat la urmatoarele:\n%s" % (_selections[_selection], _commands))
+        await self.parent.send_message("eu raspund decat la urmatoarele:\n%s" % (_commands,))
 
-    async def __msg_1(self,match):
+    async def __msg_1(self,msg):
 
         await self.parent.send_message("<@%s> ba nu mai vorbi urat" % (self.message.author.id,))
 
-    async def __msg_2(self,match):
+    async def __msg_2(self,msg):
 
         _links = """
         SPDP - http://intranet-eibu.yazaki-europe.com/spdp/
@@ -195,27 +182,44 @@ class DD_Message():
 
         await self.parent.send_message(_links)
 
-    async def __msg_3(self,match):
+    async def __msg_3(self,msg):
 
-        _selections = [
-                        "nu da cu piatra in geam ca nu e bicicleta ta",
-                        "daca nu faci nimic, nu strici nimic",
-                        "daca ceva merge, nu il repara",
-                        "cine sapara groapa altuia, departe ajunge",
-                        "daca nu ai enervat pe nimeni, inseamna ca nu ai facut nimic",
-                        "orice cacat faci, sa il ambalezi frumos",
-                        "nu te certa cu prostii, ca au mai multa experienta",
-                        "nu uita ca e ilegal sa omori alti oameni",
-                      ]
+        _selections = [_advice.text for _advice in self.parent.db.get_all_advice()]
 
         _selection = randrange(0,len(_selections))
     
         await self.parent.send_message(_selections[_selection])
 
-    async def __msg_4(self,match):
+    async def __msg_4(self,msg):
 
         await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
 
-    async def __msg_5(self,match):
+    async def __msg_5(self,msg):
 
         await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
+
+    async def __msg_6(self,msg):
+
+        _match = re.match("tine minte (.+)",msg)
+
+        if _match != None:
+
+            _advice = _match.group(1)
+
+            _profile = self.parent.db.get_user_profile_by_uid(self.message.author.id)
+
+            if _profile != None:
+
+                if _profile.admin:
+
+                    self.parent.db.add_advice(_advice,self.message.author.id)
+
+                    _reply = "am sa tin minte asta <@%s>" % (self.message.author.id,)
+                else:
+                    _reply = "nu iau sfaturi de la tine <@%s>" % (self.message.author.id,)
+            else:
+                _reply = "nu iau sfaturi de la tine <@%s>" % (self.message.author.id,)
+        else:
+            _reply = "sa tin minte ce? ca nu mi-ai spus nimic <@%s>" % (self.message.author.id,)
+
+        await self.parent.send_message(_reply)
