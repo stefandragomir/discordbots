@@ -95,8 +95,7 @@ class DD_Message():
         _keyword.clbk        = self.__msg_6
         _keyword.description = None
         self.keywords.add(_keyword)
-
-        self.keywords.add(_keyword)
+        
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["scor"]
         _keyword.clbk        = self.__msg_7

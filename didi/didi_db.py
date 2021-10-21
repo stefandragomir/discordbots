@@ -68,7 +68,7 @@ class DD_DB():
         
     def add_advice(self,text,user_uid):
 
-        _users = sef.get_user_by_uid(user_uid)
+        _users = self.get_user_by_uid(user_uid)
 
         _advice      = DD_DB_Advice()
         _advice.text = text
@@ -120,4 +120,3 @@ class DD_DB():
         self.session.add(_rule)
 
         self.session.commit()
-

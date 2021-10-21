@@ -108,12 +108,12 @@ class DD():
     def keywords(self):
 
         _keywords = [_keyword for _keyword in DD_Message(self,None).keywords]
-        
+
         print("KEYWORDS:")
 
         for _keyword in _keywords:
 
-            print("   ",_keyword.rules)       
+            print("   ",_keyword.rules)  
 
     def get_guild(self):
 
