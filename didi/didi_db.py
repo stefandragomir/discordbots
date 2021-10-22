@@ -91,7 +91,7 @@ class DD_DB():
         else:
             _word       = DD_DB_Word()
             _word.text  = text
-            _word.count = 0
+            _word.count = 1
 
         self.session.add(_word)
 

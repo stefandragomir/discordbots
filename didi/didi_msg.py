@@ -128,8 +128,6 @@ class DD_Message():
 
                 self.parent.db.add_word(_word)
 
-
-
     def __get_msg(self,txt):
 
         _msg = None
