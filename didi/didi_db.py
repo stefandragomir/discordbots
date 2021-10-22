@@ -24,21 +24,33 @@ class DD_DB():
 
         return self.session.query(DD_DB_Config).all()
 
+    def get_all_users(self):
+
+        return self.session.query(DD_DB_User).all()
+
     def get_all_advice(self):
 
         return self.session.query(DD_DB_Advice).all()
-
-    def get_all_rules(self):
-
-        return self.session.query(DD_DB_Rule).all()
 
     def get_all_profiles(self):
 
         return self.session.query(DD_DB_Profile).all()
 
+    def get_all_rules(self):
+
+        return self.session.query(DD_DB_Rule).all()
+
+    def get_all_words(self):
+
+        return self.session.query(DD_DB_Word).all()
+
     def get_user_by_uid(self,uid):
 
         return self.session.query(DD_DB_User).filter_by(uid=uid).all()
+
+    def get_user_by_name(self,name):
+
+        return self.session.query(DD_DB_User).filter_by(name=name).all()
 
     def get_user_profile_by_uid(self,uid):
 
@@ -92,10 +104,15 @@ class DD_DB():
             _word       = DD_DB_Word()
             _word.text  = text
             _word.count = 1
+            _word.tag   = DD_DB_POS_TAGS.X
 
         self.session.add(_word)
 
         self.session.commit()
+
+    def get_word(self,text):
+
+        return self.session.query(DD_DB_Word).filter_by(text=text).all()
 
     def increment_badword(self,user_uid):
 
@@ -139,3 +156,140 @@ class DD_DB():
         self.session.add(_rule)
 
         self.session.commit()
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_Clean_DB():
+
+    def __init__(self,original_path,clean_path,log):
+
+        self.db       = DD_DB(original_path)
+        self.db_clean = DD_DB(clean_path)
+        self.log      = log
+
+    def run(self):
+
+        self.log.debug("connecting to db [%s]" % (self.db.path,))
+        self.db.connect()
+
+        self.log.debug("connecting to db [%s]" % (self.db_clean.path,))
+        self.db_clean.connect()
+
+        self.clean_configs()
+
+        self.clean_users()
+
+        self.clean_advice()
+
+        self.clean_profiles()
+
+        self.clean_rules()
+
+        self.clean_words()
+
+        self.log.debug("saving")
+        self.db_clean.session.commit()
+
+        self.log.debug("done")
+
+    def clean_configs(self):
+
+        self.log.debug("cleaning config table")
+
+        _configs  = self.db.get_all_config()
+
+        for _config in _configs:
+
+            _new         = DD_DB_Config()
+            _new.token   = _config.token
+            _new.guild   = _config.guild
+            _new.channel = _config.channel
+            _new.botid   = _config.botid
+
+            self.db_clean.session.add(_new)
+
+    def clean_users(self):
+
+        self.log.debug("cleaning user table")
+
+        _users    = self.db.get_all_users()
+
+        for _user in _users:
+
+            _new      = DD_DB_User()
+            _new.name = _user.name
+            _new.uid  = _user.uid
+
+            self.db_clean.session.add(_new)
+
+    def clean_advice(self):
+
+        self.log.debug("cleaning advice table")
+
+        _advice   = self.db.get_all_advice()
+
+        for _ad in _advice:
+
+            _users = self.db_clean.get_user_by_name(_ad.user.name)
+
+            _new         = DD_DB_Advice()
+            _new.text    = _ad.text
+            _new.user    = _users[0]
+
+            self.db_clean.session.add(_new)
+
+    def clean_profiles(self):
+
+        self.log.debug("cleaning profile table")
+
+        _profiles = self.db.get_all_profiles()
+
+        for _profile in _profiles:
+
+            _users = self.db_clean.get_user_by_name(_profile.user.name)
+
+            _new          = DD_DB_Profile()
+            _new.badwords = _profile.badwords
+            _new.admin    = _profile.admin
+            _new.user     = _users[0]
+
+
+            self.db_clean.session.add(_new)
+
+    def clean_rules(self):
+
+        self.log.debug("cleaning rule table")
+
+        _rules    = self.db.get_all_rules()
+
+        for _rule in _rules:
+
+            _new         = DD_DB_Rule()
+            _new.text    = _rule.text
+            _new.context = _rule.context
+
+            self.db_clean.session.add(_new)
+
+    def clean_words(self):
+
+        self.log.debug("cleaning word table")
+
+        _words    = self.db.get_all_words()
+
+        for _word in _words:
+
+            _all_words = self.db_clean.get_word(_word.text)
+
+            if len(_all_words) == 0:
+
+                _new = DD_DB_Word()
+
+                _new.text  = _word.text
+                _new.tag   = _word.tag
+                _new.count = _word.count
+
+                self.db_clean.session.add(_new)
+
+            else:
+                _all_words[0].count += _word.count

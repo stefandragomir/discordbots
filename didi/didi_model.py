@@ -15,6 +15,29 @@ DD_DB_Base    = declarative_base()
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
+class DD_DB_POS_TAGS(enum.Enum):
+
+        ADJ   = 1  #adjective
+        ADP   = 2  #adposition
+        ADV   = 3  #adverb
+        AUX   = 4  #auxiliary
+        CCONJ = 5  #coordinating conjunction
+        DET   = 6  #determiner
+        INTJ  = 7  #interjection
+        NOUN  = 8  #noun
+        NUM   = 9  #numeral
+        PART  = 10 #particle
+        PRON  = 11 #pronoun
+        PROPN = 12 #proper noun
+        PUNCT = 13 #punctuation
+        SCONJ = 14 #subordinating conjunction
+        SYM   = 15 #symbol
+        VERB  = 16 #verb
+        X     = 17 #other
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
 class DD_DB_Rule_Types(enum.Enum):
 
     RULE_BAD_WORD = 1
@@ -165,6 +188,7 @@ class DD_DB_Word(DD_DB_Base):
     id       = Column(Integer, primary_key=True)
     text     = Column(String)
     count    = Column(Integer)
+    tag      = Column(Enum(DD_DB_POS_TAGS))
 
 
     def __repr__(self):

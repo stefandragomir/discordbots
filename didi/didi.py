@@ -6,7 +6,8 @@ from argparse      import ArgumentParser
 from didi_msg      import DD_Message
 from didi_logger   import DD_Logger
 from didi_db       import DD_DB
-
+from didi_db       import DD_Clean_DB
+from didi_model    import *  
 
 """*************************************************************************************************
 ****************************************************************************************************
@@ -28,6 +29,7 @@ class DD_Arguments(object):
         self.arg.add_argument('--run',        type=str,            help='run didi on specified configuration')
         self.arg.add_argument('--init',       action='store_true', help='create empty didi db')
         self.arg.add_argument('--keywords',   action='store_true', help='show all didi defined keywords')
+        self.arg.add_argument('--clean',      action='store_true', help='clean the database')
 
     def _parse_arguments(self):
 
@@ -79,6 +81,10 @@ class DD():
 
             self.keywords()
 
+        elif self.arg.arguments.clean:
+
+            self.clean()
+
     def run(self,index):
 
         index = int(index)
@@ -114,6 +120,12 @@ class DD():
         for _keyword in _keywords:
 
             print("   ",_keyword.rules)  
+
+    def clean(self):
+
+        _clean = DD_Clean_DB(self.get_db_path(), self.get_clean_db_path(), self.log)
+
+        _clean.run()
 
     def get_guild(self):
 
@@ -164,6 +176,10 @@ class DD():
     def get_db_path(self):
 
         return os.path.join(self.get_settings_dir(),"db","didi.db")
+
+    def get_clean_db_path(self):
+
+        return os.path.join(self.get_settings_dir(),"db","didi_clean.db")
 
     def get_log_path(self):
 
