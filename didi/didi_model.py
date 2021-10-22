@@ -137,7 +137,7 @@ class DD_DB_Rule(DD_DB_Base):
     __tablename__ = 'rules'
 
     id       = Column(Integer, primary_key=True)
-    text     = Column(Integer)
+    text     = Column(String)
     context  = Column(Enum(DD_DB_Rule_Types))
 
 
@@ -152,6 +152,32 @@ class DD_DB_Rule(DD_DB_Base):
     def __print(self):
 
         _txt =  "user: id[%s] text[%s] context[%s] " % (self.id,self.text,self.context)
+
+        return _txt
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_DB_Word(DD_DB_Base):
+
+    __tablename__ = 'words'
+
+    id       = Column(Integer, primary_key=True)
+    text     = Column(String)
+    count    = Column(Integer)
+
+
+    def __repr__(self):
+
+        return self.__print()
+
+    def __str__(self):
+
+        return self.__print()
+
+    def __print(self):
+
+        _txt =  "user: id[%s] text[%s] count[%s] " % (self.id,self.text,self.count)
 
         return _txt
 

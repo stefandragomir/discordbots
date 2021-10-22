@@ -104,6 +104,8 @@ class DD_Message():
 
     async def reply(self):
 
+        self.__record(self.message.content)
+
         _msg = self.__get_msg(self.message.content)
 
         if _msg != None:
@@ -113,6 +115,20 @@ class DD_Message():
                 if _keyword.is_match(_msg):
 
                     await _keyword.clbk(_msg)
+
+    def __record(self,text):
+
+        _words = text.split(" ")
+
+        for _word in _words:
+
+            _word = _word.strip()
+
+            if _word != "":
+
+                self.parent.db.add_word(_word)
+
+
 
     def __get_msg(self,txt):
 

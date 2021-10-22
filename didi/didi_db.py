@@ -78,6 +78,25 @@ class DD_DB():
 
         self.session.commit()
 
+    def add_word(self,text):
+
+        text = str(text).lower()
+
+        _words = self.session.query(DD_DB_Word).filter_by(text=text).all()
+
+        if len(_words) > 0:
+            for _word in _words:
+
+                _word.count += 1
+        else:
+            _word       = DD_DB_Word()
+            _word.text  = text
+            _word.count = 0
+
+        self.session.add(_word)
+
+        self.session.commit()
+
     def increment_badword(self,user_uid):
 
         _profile = self.get_user_profile_by_uid(user_uid)
