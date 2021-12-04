@@ -61,12 +61,6 @@ class DD_Message():
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["link"]
-        _keyword.clbk        = self.__msg_2
-        _keyword.description = "link -  afisez linkul pentru saracii din Yazaki"
-        self.keywords.add(_keyword)
-
-        _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["sfat"]
         _keyword.clbk        = self.__msg_3
         _keyword.description = "sfat -  dau un sfat de viata"
@@ -79,8 +73,8 @@ class DD_Message():
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["goodbye"]
-        _keyword.clbk        = self.__msg_5
+        _keyword.rules       = ["greeting"]
+        _keyword.clbk        = self.__msg_4
         _keyword.description = None
         self.keywords.add(_keyword)
 
@@ -92,13 +86,13 @@ class DD_Message():
         self.keywords.add(_keyword)
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["tine minte"]
-        _keyword.clbk        = self.__msg_6
+        _keyword.clbk        = self.__msg_5
         _keyword.description = None
         self.keywords.add(_keyword)
         
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["scor"]
-        _keyword.clbk        = self.__msg_7
+        _keyword.clbk        = self.__msg_6
         _keyword.description = "scor -  cat de des s-a injurat"
         self.keywords.add(_keyword)
 
@@ -142,10 +136,8 @@ class DD_Message():
             _msg = ""
         elif re.match("<@!%s>" % (self.parent.config.botid,),self.message.content.strip()):
             _msg = ""
-        elif self.__is_hello(self.message.content.strip()):
-            _msg = "hello"
-        elif self.__is_goodbye(self.message.content.strip()):
-            _msg = "goodbye"
+        elif self.__is_greeting(self.message.content.strip()):
+            _msg = "greeting"
         else:
             _msg = None
 
@@ -157,15 +149,9 @@ class DD_Message():
 
         return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
 
-    def __is_hello(self,text):
+    def __is_greeting(self,text):
 
-        _rules = [_rule.text for _rule in self.parent.db.get_rules_hello()]
-
-        return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
-
-    def __is_goodbye(self,text):
-
-        _rules = [_rule.text for _rule in self.parent.db.get_rules_goodbye()]
+        _rules = [_rule.text for _rule in self.parent.db.get_rules_greeting()]
 
         return any([None != re.search(r"%s|%s\s|\s%s" % (_rule,_rule,_rule),text.lower()) for _rule in _rules])
 
@@ -185,24 +171,11 @@ class DD_Message():
 
         self.parent.db.increment_badword(self.message.author.id)
 
-        await self.parent.send_message("<@%s> ba nu mai vorbi urat" % (self.message.author.id,))
+        await self.parent.send_message("<@%s> nu mai vorbi urat" % (self.message.author.id,))
 
     async def __msg_2(self,msg):
 
-        _links = """
-        SPDP - http://intranet-eibu.yazaki-europe.com/spdp/
-        EMATRIX - https://matrix.yazaki-europe.com/ematrix
-        MHT - https://mht.yazaki-europe.com/mht/Account/LogOn#/persons/view
-        ODOO - http://10.50.4.223:8069/
-        IT TICKET - https://yelprod.service-now.com/sp?id=ticket&is_new_order=true&table=incident&sys_id=528a5a681b950c10698ec8017e4bcbd7
-        GITLAB - http://10.50.4.223:11011/
-        REVIEW TOOL - http://10.50.4.223:22022/
-        VIDEO TUTORIALS - https://web.microsoftstream.com/group/1adfb544-9161-4b83-b224-9c27606ce7bd
-        ASSET MANAGEMENT - http://yctt-f01.yel.yazaki.local/trac/yct-t-assets
-        SW TOOLS SHARE POINT - https://yazaki.sharepoint.com/sites/SoftwareTools
-        """
-
-        await self.parent.send_message(_links)
+        await self.parent.send_message("")
 
     async def __msg_3(self,msg):
 
@@ -217,10 +190,6 @@ class DD_Message():
         await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
 
     async def __msg_5(self,msg):
-
-        await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
-
-    async def __msg_6(self,msg):
 
         _match = re.match("tine minte (.+)",msg)
 
@@ -246,7 +215,7 @@ class DD_Message():
 
         await self.parent.send_message(_reply)
 
-    async def __msg_7(self,msg):
+    async def __msg_6(self,msg):
 
         _reply = ""
 

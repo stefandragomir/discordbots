@@ -39,21 +39,6 @@ class DD_DB_POS_TAGS(enum.Enum):
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_DB_Weights():
-
-    def __init__(self):
-
-        weight_angry      = Column(Float)
-        weight_funny      = Column(Float)
-        weigth_sad        = Column(Float)
-        weight_tehnical   = Column(Float)
-        weight_swear      = Column(Float)
-        weight_neutral    = Column(Float)
-        weight_greeting   = Column(Float)
-
-'''********************************************************************************************************
-***********************************************************************************************************
-********************************************************************************************************'''
 class DD_DB_Rule_Types(enum.Enum):
 
     RULE_BAD_WORD = 1
@@ -197,7 +182,7 @@ class DD_DB_Rule(DD_DB_Base):
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_DB_Word(DD_DB_Base,DD_DB_Weights):
+class DD_DB_Word(DD_DB_Base):
 
     __tablename__ = 'words'
 
@@ -205,6 +190,13 @@ class DD_DB_Word(DD_DB_Base,DD_DB_Weights):
     text              = Column(String)
     count             = Column(Integer)
     tag               = Column(Enum(DD_DB_POS_TAGS))
+    weight_angry      = Column(Float)
+    weight_funny      = Column(Float)
+    weigth_sad        = Column(Float)
+    weight_tehnical   = Column(Float)
+    weight_swear      = Column(Float)
+    weight_neutral    = Column(Float)
+    weight_greeting   = Column(Float)
 
     def __repr__(self):
 

@@ -213,8 +213,6 @@ async def on_disconnect():
 @didi.client.event
 async def on_message(message):
 
-    didi.log.debug("%s: %s" % (message.author,message.content))
-
     await didi.on_message(message)
 
 '''********************************************************************************************************

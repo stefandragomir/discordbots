@@ -70,13 +70,9 @@ class DD_DB():
 
         return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_BAD_WORD).all()
 
-    def get_rules_hello(self):
+    def get_rules_greeting(self):
 
-        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_HELLO).all()
-
-    def get_rules_goodbye(self):
-
-        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_GOODBY).all()
+        return self.session.query(DD_DB_Rule).filter_by(context=DD_DB_Rule_Types.RULE_GREETING).all()
         
     def add_advice(self,text,user_uid):
 
