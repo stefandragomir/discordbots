@@ -118,7 +118,7 @@ class DD_Message():
 
     def __record(self,text):
 
-        _words = text.split(" ")
+        _words = re.findall("[a-zA-Z/-]+",text)
 
         for _word in _words:
 

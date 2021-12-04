@@ -4,6 +4,7 @@ import enum
 from sqlalchemy.orm import declarative_base
 from sqlalchemy     import Column
 from sqlalchemy     import Integer
+from sqlalchemy     import Float
 from sqlalchemy     import String
 from sqlalchemy     import Boolean
 from sqlalchemy     import Enum
@@ -34,6 +35,21 @@ class DD_DB_POS_TAGS(enum.Enum):
         SYM   = 15 #symbol
         VERB  = 16 #verb
         X     = 17 #other
+
+'''********************************************************************************************************
+***********************************************************************************************************
+********************************************************************************************************'''
+class DD_DB_Weights():
+
+    def __init__(self):
+
+        weight_angry      = Column(Float)
+        weight_funny      = Column(Float)
+        weigth_sad        = Column(Float)
+        weight_tehnical   = Column(Float)
+        weight_swear      = Column(Float)
+        weight_neutral    = Column(Float)
+        weight_greeting   = Column(Float)
 
 '''********************************************************************************************************
 ***********************************************************************************************************
@@ -181,15 +197,14 @@ class DD_DB_Rule(DD_DB_Base):
 '''********************************************************************************************************
 ***********************************************************************************************************
 ********************************************************************************************************'''
-class DD_DB_Word(DD_DB_Base):
+class DD_DB_Word(DD_DB_Base,DD_DB_Weights):
 
     __tablename__ = 'words'
 
-    id       = Column(Integer, primary_key=True)
-    text     = Column(String)
-    count    = Column(Integer)
-    tag      = Column(Enum(DD_DB_POS_TAGS))
-
+    id                = Column(Integer, primary_key=True)
+    text              = Column(String)
+    count             = Column(Integer)
+    tag               = Column(Enum(DD_DB_POS_TAGS))
 
     def __repr__(self):
 

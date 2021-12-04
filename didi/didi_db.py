@@ -285,9 +285,16 @@ class DD_Clean_DB():
 
                 _new = DD_DB_Word()
 
-                _new.text  = _word.text
-                _new.tag   = _word.tag
-                _new.count = _word.count
+                _new.text            = _word.text
+                _new.tag             = _word.tag
+                _new.count           = _word.count
+                _new.weight_angry    = _word.weight_angry
+                _new.weight_funny    = _word.weight_funny
+                _new.weigth_sad      = _word.weigth_sad
+                _new.weight_tehnical = _word.weight_tehnical
+                _new.weight_swear    = _word.weight_swear
+                _new.weight_neutral  = _word.weight_neutral
+                _new.weight_greeting = _word.weight_greeting
 
                 self.db_clean.session.add(_new)
 
