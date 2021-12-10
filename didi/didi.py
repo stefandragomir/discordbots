@@ -171,6 +171,10 @@ class DD():
 
         await self.channel_links.send(text)
 
+    async def delete_message_from_links(self,message):
+
+        await self.channel_links.delete_messages([message])
+
     async def on_message(self,message):
 
         if message.channel == self.channel_general:
