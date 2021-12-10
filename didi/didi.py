@@ -3,7 +3,8 @@ import sys
 import os
 import discord
 from argparse      import ArgumentParser
-from didi_msg      import DD_Message
+from didi_msg      import DD_Message_General
+from didi_msg      import DD_Message_Links
 from didi_logger   import DD_Logger
 from didi_db       import DD_DB
 from didi_db       import DD_Clean_DB
@@ -172,9 +173,17 @@ class DD():
 
     async def on_message(self,message):
 
-        _msg = DD_Message(self,message)
+        if message.channel == self.channel_general:
 
-        await _msg.reply()
+            _msg = DD_Message_General(self,message)
+
+            await _msg.reply()
+
+        if message.channel == self.channel_links:
+
+            _msg = DD_Message_Links(self,message)
+
+            await _msg.reply()
 
     def get_settings_dir(self):
 
