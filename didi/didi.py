@@ -42,30 +42,31 @@ class DD():
 
     def __init__(self):
 
-        self.db        = DD_DB(self.get_db_path())
-        self.client    = discord.Client()
-        self.log       = DD_Logger(self.get_log_path())
-        self.config    = None
-        self.guild     = None
-        self.channel   = None
-        self.arg       = DD_Arguments()
+        self.db               = DD_DB(self.get_db_path())
+        self.client           = discord.Client()
+        self.log              = DD_Logger(self.get_log_path())
+        self.config           = None
+        self.guild            = None
+        self.channel_general  = None
+        self.channel_links    = None
+        self.arg              = DD_Arguments()
 
     async def connect(self):
 
         self.get_guild()
 
-        self.get_channel()
+        self.get_channels()
 
-        if self.guild != None and self.channel != None:
+        if self.guild != None and self.channel_general != None and self.channel_links != None:
 
-            self.log.info("didi connected to guild [%s] channel [%s]" % (self.guild.name,self.channel))
+            self.log.info("didi connected to guild [%s] channel general [%s] channel links [%s]" % (self.guild.name,self.channel_general,self.channel_links))
 
         else:
-            self.log.info("didi could not connect to guild [%s] channel [%s]" % (self.guild.name,self.channel))
+            self.log.info("didi could not connect to guild [%s] channel general [%s] channel links [%s]" % (self.guild.name,self.channel_general,self.channel_links))
 
     async def disconnect(self):
 
-        self.log.info("didi disconnected from guild [%s] channel [%s]" % (self.guild.name,self.channel))
+        self.log.info("didi disconnected from guild [%s] channel general [%s] channel links [%s]" % (self.guild.name,self.channel_general,self.channel_links))
 
     def execute(self):
 
@@ -139,21 +140,35 @@ class DD():
 
                 self.log.debug("found for guild [%s]" % (self.config.guild,))
 
-    def get_channel(self):
+    def get_channels(self):
 
-        self.log.debug("searching for channel [%s]" % (self.config.channel,))
+        self.log.debug("searching for channel general [%s]" % (self.config.channel_general,))
 
         for _channel in self.guild.text_channels:
 
-            if _channel.name == self.config.channel:
+            if _channel.name == self.config.channel_general:
 
-                self.channel = _channel
+                self.channel_general = _channel
 
-                self.log.debug("found channel [%s]" % (self.config.channel,))
+                self.log.debug("found channel [%s]" % (self.config.channel_general,))
 
-    async def send_message(self,text):
+        self.log.debug("searching for channel links [%s]" % (self.config.channel_links,))
 
-        await self.channel.send(text)
+        for _channel in self.guild.text_channels:
+
+            if _channel.name == self.config.channel_links:
+
+                self.channel_links = _channel
+
+                self.log.debug("found channel [%s]" % (self.config.channel_links,))
+
+    async def send_message_to_general(self,text):
+
+        await self.channel_general.send(text)
+
+    async def send_message_to_links(self,text):
+
+        await self.channel_links.send(text)
 
     async def on_message(self,message):
 

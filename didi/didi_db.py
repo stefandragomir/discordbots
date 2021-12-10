@@ -197,11 +197,12 @@ class DD_Clean_DB():
 
         for _config in _configs:
 
-            _new         = DD_DB_Config()
-            _new.token   = _config.token
-            _new.guild   = _config.guild
-            _new.channel = _config.channel
-            _new.botid   = _config.botid
+            _new                 = DD_DB_Config()
+            _new.token           = _config.token
+            _new.guild           = _config.guild
+            _new.channel_general = _config.channel_general
+            _new.channel_links   = _config.channel_links
+            _new.botid           = _config.botid
 
             self.db_clean.session.add(_new)
 

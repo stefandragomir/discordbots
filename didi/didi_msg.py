@@ -165,17 +165,17 @@ class DD_Message():
 
                 _commands += "    %s\n" % (_keyword.description, )
 
-        await self.parent.send_message("eu raspund decat la urmatoarele:\n%s" % (_commands,))
+        await self.parent.send_message_to_general("eu raspund decat la urmatoarele:\n%s" % (_commands,))
 
     async def __msg_1(self,msg):
 
         self.parent.db.increment_badword(self.message.author.id)
 
-        await self.parent.send_message("<@%s> nu mai vorbi urat" % (self.message.author.id,))
+        await self.parent.send_message_to_general("<@%s> nu mai vorbi urat" % (self.message.author.id,))
 
     async def __msg_2(self,msg):
 
-        await self.parent.send_message("")
+        await self.parent.send_message_to_general("")
 
     async def __msg_3(self,msg):
 
@@ -183,11 +183,11 @@ class DD_Message():
 
         _selection = randrange(0,len(_selections))
     
-        await self.parent.send_message(_selections[_selection])
+        await self.parent.send_message_to_general(_selections[_selection])
 
     async def __msg_4(self,msg):
 
-        await self.parent.send_message(":wave:  <@%s>" % (self.message.author.id,))
+        await self.parent.send_message_to_general(":wave:  <@%s>" % (self.message.author.id,))
 
     async def __msg_5(self,msg):
 
@@ -213,7 +213,7 @@ class DD_Message():
         else:
             _reply = "sa tin minte ce? ca nu mi-ai spus nimic <@%s>" % (self.message.author.id,)
 
-        await self.parent.send_message(_reply)
+        await self.parent.send_message_to_general(_reply)
 
     async def __msg_6(self,msg):
 
@@ -242,4 +242,4 @@ class DD_Message():
 
             _count += 1
 
-        await self.parent.send_message(_reply)
+        await self.parent.send_message_to_general(_reply)

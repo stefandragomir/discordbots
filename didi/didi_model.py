@@ -51,11 +51,12 @@ class DD_DB_Config(DD_DB_Base):
 
     __tablename__ = 'configs'
 
-    id        = Column(Integer, primary_key=True)
-    token     = Column(String)
-    guild     = Column(String)
-    channel   = Column(String)
-    botid     = Column(String)
+    id                = Column(Integer, primary_key=True)
+    token             = Column(String)
+    guild             = Column(String)
+    channel_general   = Column(String)
+    channel_links     = Column(String)
+    botid             = Column(String)
 
 
     def __repr__(self):
@@ -68,7 +69,14 @@ class DD_DB_Config(DD_DB_Base):
 
     def __print(self):
 
-        _txt =  "user: id[%s] token[%s] guild[%s] channel[%s] botid[%s]" % (self.id,self.token,self.guild,self.channel,self.botid)
+        _txt =  "user: id[%s] token[%s] guild[%s] channel_general[%s] channel_links[%s] botid[%s]" % (
+                                                                                                        self.id,
+                                                                                                        self.token,
+                                                                                                        self.guild,
+                                                                                                        self.channel_general,
+                                                                                                        self.channel_links,
+                                                                                                        self.botid
+                                                                                                    )
 
         return _txt
 
