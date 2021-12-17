@@ -177,13 +177,13 @@ class DD():
 
     async def on_message(self,message):
 
-        if message.channel == self.channel_general:
+        if message.channel.name == self.channel_general.name:
 
             _msg = DD_Message_General(self,message)
 
             await _msg.reply()
 
-        if message.channel == self.channel_links:
+        if message.channel.name == self.channel_links.name:
 
             _msg = DD_Message_Links(self,message)
 
