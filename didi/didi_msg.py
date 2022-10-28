@@ -96,6 +96,18 @@ class DD_Message_General():
         _keyword.description = "scor -  cat de des s-a injurat"
         self.keywords.add(_keyword)
 
+        _keyword             = DD_Message_Keyword()
+        _keyword.rules       = ["blacklist"]
+        _keyword.clbk        = self.__msg_7
+        _keyword.description = "lista de persoane neplacute"
+        self.keywords.add(_keyword)
+
+        _keyword             = DD_Message_Keyword()
+        _keyword.rules       = ["kill"]
+        _keyword.clbk        = self.__msg_8
+        _keyword.description = ""
+        self.keywords.add(_keyword)
+
     async def reply(self):
 
         self.__record(self.message.content)
@@ -245,6 +257,23 @@ class DD_Message_General():
             _count += 1
 
         await self.parent.send_message_to_general(_reply)
+
+    async def __msg_7(self,msg):
+
+        _reply = ""
+
+        _reply = "not implemented yet"
+
+        await self.parent.send_message_to_general(_reply)
+
+    async def __msg_8(self,msg):
+
+        _reply = ""
+
+        _reply = "not implemented yet"
+
+        await self.parent.send_message_to_general(_reply)
+
 
 '''********************************************************************************************************
 ***********************************************************************************************************
