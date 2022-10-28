@@ -126,7 +126,7 @@ class DD_Message_General():
 
         _msg = None
 
-        _match = re.match("<@&%s> (.+)" % (self.parent.config.botid,),self.message.content.strip())
+        _match = re.match(r"\/didi (.+)",self.message.content.strip())
 
         if self.__is_bad_word(self.message.content.strip()):
             _msg = "badwords"
