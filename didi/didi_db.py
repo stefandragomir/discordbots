@@ -46,7 +46,7 @@ class DD_DB():
 
     def get_all_blacklists(self):
 
-        return self.session.query(DD_DB_Blacklist).all()
+        return self.session.query(DD_DB_BlackList).all()
 
     def get_user_by_uid(self,uid):
 
@@ -128,9 +128,9 @@ class DD_DB():
 
         _blacklist = self.get_blacklist_by_name(name)
 
-        if _blacklist != None:
+        if len(_blacklist) != 0:
 
-            _blacklist.votes += 1
+            _blacklist[0].votes += 1
 
         self.session.commit()
 

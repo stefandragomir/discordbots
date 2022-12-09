@@ -99,13 +99,13 @@ class DD_Message_General():
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["flegme"]
         _keyword.clbk        = self.__msg_7
-        _keyword.description = "lista de persoane neplacute"
+        _keyword.description = "flegme - lista de persoane neplacute"
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
         _keyword.rules       = ["scuipa"]
         _keyword.clbk        = self.__msg_8
-        _keyword.description = ""
+        _keyword.description = "scuipa - adauga o persoana la lista sau voteaza o persoana neplacuta"
         self.keywords.add(_keyword)
 
     async def reply(self):
@@ -113,8 +113,6 @@ class DD_Message_General():
         self.__record(self.message.content)
 
         _msg = self.__get_msg(self.message.content)
-
-        print(_msg)
 
         if _msg != None:
 
@@ -270,18 +268,20 @@ class DD_Message_General():
 
         _count = 1
 
+        if len(_blacklists) == 0:
+
+            _reply = "pace si iubire - nici o persoana scuipata"
+
         for _blacklist in _blacklists:
 
             if _count == 1:
-                _emoji = ":first_place:"
+                _emoji = ":middle_finger:"
             elif _count == 2:
-                _emoji = ":second_place:"
+                _emoji = ":face_with_symbols_over_mouth:"
             elif _count == 3:
-                _emoji = ":third_place:"
-            elif _count == len(_blacklist):
-                _emoji = ":angry:"
+                _emoji = ":face_vomiting:"
             else:
-                _emoji = ":confused:"
+                _emoji = ":angry:"
 
             _reply += "%s %s - %s flegme\n\n" % (_emoji, _blacklist.name, _blacklist.votes)
 
@@ -299,7 +299,14 @@ class DD_Message_General():
 
             _name = _match.group(1)
 
-            self.parent.db.add_blacklist(_name)
+            _blacklist = self.parent.db.get_blacklist_by_name(_name)
+
+            if len(_blacklist) == 0:
+
+                self.parent.db.add_blacklist(_name)
+
+            else:
+                self.parent.db.increment_blacklist(_name)
 
             _reply = "{} a fost scuipat".format(_name)
 
