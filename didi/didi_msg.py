@@ -97,13 +97,13 @@ class DD_Message_General():
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["blacklist"]
+        _keyword.rules       = ["flegme"]
         _keyword.clbk        = self.__msg_7
         _keyword.description = "lista de persoane neplacute"
         self.keywords.add(_keyword)
 
         _keyword             = DD_Message_Keyword()
-        _keyword.rules       = ["kill"]
+        _keyword.rules       = ["scuipa"]
         _keyword.clbk        = self.__msg_8
         _keyword.description = ""
         self.keywords.add(_keyword)
@@ -113,6 +113,8 @@ class DD_Message_General():
         self.__record(self.message.content)
 
         _msg = self.__get_msg(self.message.content)
+
+        print(_msg)
 
         if _msg != None:
 
@@ -262,7 +264,28 @@ class DD_Message_General():
 
         _reply = ""
 
-        _reply = "not implemented yet"
+        _blacklists = self.parent.db.get_all_blacklists()
+
+        _blacklists.sort(reverse=False,key=lambda blacklist: blacklist.votes)
+
+        _count = 1
+
+        for _blacklist in _blacklists:
+
+            if _count == 1:
+                _emoji = ":first_place:"
+            elif _count == 2:
+                _emoji = ":second_place:"
+            elif _count == 3:
+                _emoji = ":third_place:"
+            elif _count == len(_blacklist):
+                _emoji = ":angry:"
+            else:
+                _emoji = ":confused:"
+
+            _reply += "%s %s - %s flegme\n\n" % (_emoji, _blacklist.name, _blacklist.votes)
+
+            _count += 1
 
         await self.parent.send_message_to_general(_reply)
 
@@ -270,7 +293,15 @@ class DD_Message_General():
 
         _reply = ""
 
-        _reply = "not implemented yet"
+        _match = re.match(r"scuipa\s+(.+)",msg)
+
+        if _match != None:
+
+            _name = _match.group(1)
+
+            self.parent.db.add_blacklist(_name)
+
+            _reply = "{} a fost scuipat".format(_name)
 
         await self.parent.send_message_to_general(_reply)
 

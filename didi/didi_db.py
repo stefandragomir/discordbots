@@ -44,6 +44,10 @@ class DD_DB():
 
         return self.session.query(DD_DB_Word).all()
 
+    def get_all_blacklists(self):
+
+        return self.session.query(DD_DB_Blacklist).all()
+
     def get_user_by_uid(self,uid):
 
         return self.session.query(DD_DB_User).filter_by(uid=uid).all()
@@ -51,6 +55,10 @@ class DD_DB():
     def get_user_by_name(self,name):
 
         return self.session.query(DD_DB_User).filter_by(name=name).all()
+
+    def get_blacklist_by_name(self,name):
+
+        return self.session.query(DD_DB_BlackList).filter_by(name=name).all()
 
     def get_user_profile_by_uid(self,uid):
 
@@ -103,6 +111,26 @@ class DD_DB():
             _word.tag   = DD_DB_POS_TAGS.X
 
         self.session.add(_word)
+
+        self.session.commit()
+
+    def add_blacklist(self,name):
+
+        _blacklist         = DD_DB_BlackList()
+        _blacklist.name    = name
+        _blacklist.votes   = 1
+
+        self.session.add(_blacklist)
+
+        self.session.commit()
+
+    def increment_blacklist(self,name):
+
+        _blacklist = self.get_blacklist_by_name(name)
+
+        if _blacklist != None:
+
+            _blacklist.votes += 1
 
         self.session.commit()
 
@@ -297,3 +325,17 @@ class DD_Clean_DB():
 
             else:
                 _all_words[0].count += _word.count
+
+    def clean_blacklist(self):
+
+        self.log.debug("cleaning blacklist table")
+
+        _blacklists = self.db.get_all_blacklists()
+
+        for _blacklist in _blacklists:
+
+            _new        = DD_DB_BlackList()
+            _new.name   = _blacklist.name
+            _new.votes  = _blacklist.votes
+
+            self.db_clean.session.add(_new)
